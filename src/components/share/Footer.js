@@ -53,7 +53,7 @@ const Footer = () => {
                 </div>
             </footer>
             <footer className="footer-bottom py-5">
-                <p className="m-0 py-3 text-center">
+                <p className="m-0 text-center">
                     Copyrights 2022. All rights reserved.
                 </p>
             </footer>
