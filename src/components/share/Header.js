@@ -3,13 +3,13 @@ import React from "react";
 const Header = () => {
     return (
         <header>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-md container-fluid">
-                    <a class="navbar-brand" href="/">
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                <div className="container-md container-fluid">
+                    <a className="navbar-brand" href="/">
                         Doctors Portal
                     </a>
                     <button
-                        class="navbar-toggler"
+                        className="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#navbarNav"
@@ -17,26 +17,26 @@ const Header = () => {
                         aria-expanded="false"
                         aria-label="Toggle navigation"
                     >
-                        <span class="navbar-toggler-icon"></span>
+                        <span className="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
+                    <div className="collapse navbar-collapse" id="navbarNav">
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
                                 <a
-                                    class="nav-link active"
+                                    className="nav-link active"
                                     aria-current="page"
                                     href="/"
                                 >
                                     Home
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/about">
+                            <li className="nav-item">
+                                <a className="nav-link" href="/about">
                                     About
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/appoinment">
+                            <li className="nav-item">
+                                <a className="nav-link" href="/appoinment">
                                     Appoinment
                                 </a>
                             </li>
