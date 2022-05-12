@@ -6,7 +6,7 @@ const AvailAppoinment = ({ date }) => {
     const [service, setService] = useState({});
 
     useEffect(() => {
-        fetch("services.json")
+        fetch("http://localhost:5000/services")
             .then((res) => res.json())
             .then((data) => setServices(data));
     }, []);
@@ -124,6 +124,8 @@ const AvailAppoinment = ({ date }) => {
                                         className="form-control btn btn-primary"
                                         type="submit"
                                         value="SUBMIT"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"
                                     />
                                 </form>
                             </div>
