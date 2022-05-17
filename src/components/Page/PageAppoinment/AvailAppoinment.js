@@ -1,25 +1,75 @@
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
+import auth from "../../../firebase.init";
 
 const AvailAppoinment = ({ date }) => {
     const [services, setServices] = useState([]);
     const [service, setService] = useState({});
+    const [user] = useAuthState(auth);
+    const formattedDate = format(date, "PP");
+    const [refatch, setRefatch] = useState(false);
+
+    // useEffect(() => {
+    //     fetch("http://localhost:5000/services")
+    //         .then((res) => res.json())
+    //         .then((data) => setServices(data));
+    // }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5000/services")
+        fetch(`http://localhost:5000/available?date=${formattedDate}`)
             .then((res) => res.json())
-            .then((data) => setServices(data));
-    }, []);
+            .then((data) => {
+                setServices(data);
+                setRefatch(false);
+            });
+    }, [formattedDate, refatch]);
 
+    // const { isLoading, data } = useQuery("available", () => {
+    //     fetch(`http://localhost:5000/available?date=${formattedDate}`).then(
+    //         (res) => res.json()
+    //     );
+    // });
+
+    // if (isLoading) {
+    //     return <p className="text-center">Loading...</p>;
+    // }
+    // console.log(data);
     const handleSubmit = (e) => {
         e.preventDefault();
-        const date = e.target.date.value;
+
         const slot = e.target.slot.value;
-        const name = e.target.name.value;
-        const email = e.target.email.value;
-        const phone = e.target.phone.value;
-        console.log(name, email, phone, date, slot);
-        e.target.reset();
+
+        const booking = {
+            treatmentId: service._id,
+            treatment: service.name,
+            date: formattedDate,
+            slot,
+            patient: user.email,
+            patientName: user.displayName,
+            phone: e.target.phone.value,
+        };
+        fetch("http://localhost:5000/booking", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(booking),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    toast(`Appointment is set, ${formattedDate} at ${slot}`);
+                    e.target.reset();
+                    setRefatch(true);
+                } else {
+                    toast.error(
+                        `Already have and appointment on ${data.booking?.date} at ${data.booking?.slot}`
+                    );
+                }
+            });
     };
 
     return (
@@ -29,7 +79,7 @@ const AvailAppoinment = ({ date }) => {
                     Available Appoinment on {format(date, "PP")}
                 </h4>
                 <div className="row g-4">
-                    {services.map((service) => (
+                    {services?.map((service) => (
                         <div className="col-md-4" key={service._id}>
                             <div className="service-box text-center rounded p-4 shadow">
                                 <h5>{service.name}</h5>
@@ -103,8 +153,19 @@ const AvailAppoinment = ({ date }) => {
                                         type="text"
                                         className="form-control mb-3"
                                         name="name"
+                                        value={user?.displayName || ""}
                                         id=""
                                         placeholder="Full name"
+                                        readOnly
+                                    />
+                                    <input
+                                        type="email"
+                                        className="form-control mb-3"
+                                        name="email"
+                                        id=""
+                                        value={user?.email || ""}
+                                        placeholder="Enter email"
+                                        readOnly
                                     />
                                     <input
                                         type="text"
@@ -113,13 +174,7 @@ const AvailAppoinment = ({ date }) => {
                                         id=""
                                         placeholder="Phone Number"
                                     />
-                                    <input
-                                        type="text"
-                                        className="form-control mb-3"
-                                        name="email"
-                                        id=""
-                                        placeholder="Enter email"
-                                    />
+
                                     <input
                                         className="form-control btn btn-primary"
                                         type="submit"

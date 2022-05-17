@@ -6,14 +6,18 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <BrowserRouter>
-        {" "}
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        </QueryClientProvider>
     </BrowserRouter>
 );
 

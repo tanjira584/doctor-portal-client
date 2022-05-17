@@ -2,7 +2,15 @@ import React from "react";
 import Footer from "../../share/Footer";
 import Header from "../../share/Header";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+    useSignInWithGoogle,
+    useCreateUserWithEmailAndPassword,
+    useUpdateProfile,
+} from "react-firebase-hooks/auth";
+import auth from "../../../firebase.init";
+import { toast } from "react-toastify";
+import useToken from "../../../hooks/useToken";
 
 const Signup = () => {
     const {
@@ -10,20 +18,28 @@ const Signup = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
-
-    const onSubmit = (data) => {
-        console.log(data);
+    const navigate = useNavigate();
+    const [signInWithGoogle, guser, gloading, gerror] =
+        useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, user, loading, error] =
+        useCreateUserWithEmailAndPassword(auth);
+    const [updateProfile, updating, uerror] = useUpdateProfile(auth);
+    const [token] = useToken(user || guser);
+    if (token) {
+        navigate("/");
+    }
+    const onSubmit = async (data) => {
+        await createUserWithEmailAndPassword(data.email, data.password);
+        await updateProfile({ displayName: data.name });
+        toast("User create successfully");
     };
 
     return (
         <div>
             <Header></Header>
             <div className="py-5">
-                <div className="w-25 mx-auto py-5">
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="p-4 shadow"
-                    >
+                <div className="w-25 mx-auto py-5 p-4 shadow">
+                    <form onSubmit={handleSubmit(onSubmit)} className="">
                         <h4 className="text-center mb-4">Signup</h4>
 
                         <div className="mb-3">
@@ -119,18 +135,20 @@ const Signup = () => {
                                 <Link to="/login">Please Login Here</Link>
                             </p>
                         </div>
-
-                        <div className="d-flex align-items-center">
-                            <div className="border w-50"></div>
-                            <div className="mx-4">OR</div>
-                            <div className="border w-50"></div>
-                        </div>
-                        <div className="google-btn mt-4">
-                            <button className="btn btn-outline-secondary w-100">
-                                CONTINUE WITH GOOGLE
-                            </button>
-                        </div>
                     </form>
+                    <div className="d-flex align-items-center">
+                        <div className="border w-50"></div>
+                        <div className="mx-4">OR</div>
+                        <div className="border w-50"></div>
+                    </div>
+                    <div className="google-btn mt-4">
+                        <button
+                            className="btn btn-outline-secondary w-100"
+                            onClick={() => signInWithGoogle()}
+                        >
+                            CONTINUE WITH GOOGLE
+                        </button>
+                    </div>
                 </div>
             </div>
             <Footer></Footer>

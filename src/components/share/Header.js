@@ -5,15 +5,18 @@ import auth from "../../firebase.init";
 import { signOut } from "firebase/auth";
 
 const Header = () => {
-    const [user, loading] = useAuthState(auth);
-
+    const [user] = useAuthState(auth);
+    const handleSignout = () => {
+        signOut(auth);
+        localStorage.removeItem("accessToken");
+    };
     return (
         <header>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
                 <div className="container-md container-fluid">
-                    <a className="navbar-brand" href="/">
+                    <Link className="navbar-brand" to="/">
                         Doctors Portal
-                    </a>
+                    </Link>
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -42,10 +45,17 @@ const Header = () => {
                                     Appoinment
                                 </Link>
                             </li>
+                            {user && (
+                                <li>
+                                    <Link to="/dashboard" className="nav-link">
+                                        Dashboard
+                                    </Link>
+                                </li>
+                            )}
                             {user ? (
                                 <li>
                                     <button
-                                        onClick={() => signOut(auth)}
+                                        onClick={() => handleSignout()}
                                         className="nav-link btn"
                                     >
                                         Signout

@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Footer from "../../share/Footer";
 import Header from "../../share/Header";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import auth from "../../../firebase.init";
-import { useSignInWithGoogle } from "react-firebase-hooks/auth";
+import {
+    useSignInWithGoogle,
+    useSignInWithEmailAndPassword,
+} from "react-firebase-hooks/auth";
+import { toast } from "react-toastify";
+import useToken from "../../../hooks/useToken";
 
 const Login = () => {
     const {
@@ -15,11 +20,24 @@ const Login = () => {
     } = useForm();
     const [signInWithGoogle, guser, gloading, gerror] =
         useSignInWithGoogle(auth);
+    const [signInWithEmailAndPassword, user, loading, error] =
+        useSignInWithEmailAndPassword(auth);
     const onSubmit = (data) => {
-        console.log(data);
+        signInWithEmailAndPassword(data.email, data.password);
+        toast("User Logged in successfully");
     };
-    if (guser) {
-        console.log(guser);
+    const [token] = useToken(user || guser);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location?.state?.from?.pathname || "/";
+    useEffect(() => {
+        if (token) {
+            navigate(from, { replace: true });
+        }
+    }, [token, from, navigate]);
+    if (loading || gloading) {
+        return <p className="text-center">Loading...</p>;
     }
     return (
         <div>
